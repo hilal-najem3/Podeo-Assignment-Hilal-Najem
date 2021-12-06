@@ -37,6 +37,26 @@ Route::prefix('admin')->group(function() {
 	// AdminsController
 	Route::resource('admins', 'Admin\AdminsController')->middleware('auth:admin', 'SuperAdmin');
 
+	Route::group([
+		'prefix' => 'podcasts',
+	    'middleware' => ['auth:admin', 'role:editor']
+	], function () {
+		// Podcasts
+		Route::get('create', 'Admin\PodcastsController@create')->name('podcasts.create');
+		Route::post('', 'Admin\PodcastsController@store')->name('podcasts.create.submit');
+		Route::get('edit/{id}', 'Admin\PodcastsController@edit')->name('podcasts.update');
+		Route::put('update/{id}', 'Admin\PodcastsController@update')->name('podcasts.update.submit');
+		Route::delete('{id}', 'Admin\PodcastsController@destroy')->name('podcasts.destroy');
+	});
+
+	Route::group([
+		'prefix' => 'podcasts',
+	    'middleware' => ['auth:admin', 'role:reader']
+	], function () {
+		Route::get('', 'Admin\PodcastsController@index')->name('podcasts.index');
+		Route::get('{id}', 'Admin\PodcastsController@show')->name('podcasts.show');
+	});
+
 	// Login Logout Routes
 	Route::get('/login', 'Auth\Admin\LoginController@showLoginForm')->name('admin.login');
 	Route::post('/login', 'Auth\Admin\LoginController@login')->name('admin.login.submit');
@@ -50,9 +70,4 @@ Route::prefix('admin')->group(function() {
 
 	// Email Verification
 	Route::get('email/verify/{id}/{hash}', 'Auth\Admin\VerificationController@verify')->name('admin.verification.verify');
-});
-
-// Special Routes
-Route::prefix('special')->group(function() {
-	Route::get('/back/{name}', 'ReturnRedirectController@back')->name('go.back');
 });

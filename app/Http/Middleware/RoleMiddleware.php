@@ -21,7 +21,7 @@ class RoleMiddleware
             abort(404);
         }
 
-        if($permission !== null && !$request->user()->can($permission)) {
+        if($permission !== null && !$request->user()->canDo($permission)) {
             abort(404);
         }
         

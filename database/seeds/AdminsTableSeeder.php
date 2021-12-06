@@ -67,6 +67,8 @@ class AdminsTableSeeder extends Seeder
                 case 'Editor':
                     $admin->roles()->attach($editor_role);
                     $admin->permissions()->attach($createPodcastsPermission);
+                    $admin->roles()->attach($reader_role);
+                    $admin->permissions()->attach($readPodcastsPermission);
                     break;
 
                 case 'Reader':

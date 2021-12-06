@@ -14,4 +14,9 @@ class Podcast extends Model
     protected $fillable = [
         'title', 'description', 'link', 'admin_id'
     ];
+
+    public function admin() 
+    {
+        return $this->belongsTo(Admin::class)->get()->first();
+    }
 }

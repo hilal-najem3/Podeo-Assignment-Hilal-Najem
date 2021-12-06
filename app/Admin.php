@@ -41,6 +41,11 @@ class Admin extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
+    public function name()
+    {
+        return $this->first_name . ' ' . $this->last_name;
+    }
+
     /**
      * Send the password reset notification.
      *

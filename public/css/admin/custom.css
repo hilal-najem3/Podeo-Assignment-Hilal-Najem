@@ -1,1 +1,9 @@
 /* Custom css for admins */
+
+.card {
+	margin: 20px auto;
+}
+
+.my-special-div {
+	background-color: #B6B0AF;
+}

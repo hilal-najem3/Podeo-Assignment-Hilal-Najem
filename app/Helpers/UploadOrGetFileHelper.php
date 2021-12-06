@@ -1,33 +1,33 @@
 <?php
-namespace App\Traits;
+namespace App\Helpers;
 
 use Illuminate\Support\Str;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use App;
 
-trait UploadOrGetFileTrait
+class UploadOrGetFileHelper
 {
     /**
      * $file = $request->file('fileName');
      * 
      * @param  file $file The file we want to save
      * @param  string $fileFolder The file type we want to save
-     * @return string $filePath Path in which the image was saved in
+     * @return string $filePath Path in which the file was saved in
      */
     public static function saveFile($file, string $fileFolder)
     {
         // Define folder path
         $folder = '/public/'.$fileFolder;
-        // Make a file path where image will be stored
+        // Make a file path where file will be stored
         $filePath = $folder;
         // Upload file
         $environment = App::environment();
         if ($environment === 'production') {
-            $filePath = UploadOrGetFileTrait::uploadFileToS3($file, $filePath);
+            $filePath = UploadOrGetFileHelper::uploadFileToS3($file, $filePath);
             return $filePath;
         } else {
-            $filePath = UploadOrGetFileTrait::uploadFileToLocalStorage($file, $filePath);
+            $filePath = UploadOrGetFileHelper::uploadFileToLocalStorage($file, $filePath);
             //Example PHP string.
 
             //Get the first occurrence of a character.
@@ -69,8 +69,8 @@ trait UploadOrGetFileTrait
                 Storage::disk('s3')->delete($filepath);
             }
         } else {
-            if(Storage::exists('public/'.$filepath)) {
-                Storage::delete('public/'.$filepath);
+            if(Storage::exists('public'.$filepath)) {
+                Storage::delete('public'.$filepath);
             }
         }
     }
@@ -94,7 +94,7 @@ trait UploadOrGetFileTrait
             return (string) $request->getUri();
         }
 
-        return url('storage/'.$filePath);
+        return url('storage'.$filePath);
         // 
         // return Storage::url('storage/'.$filePath);
     }
