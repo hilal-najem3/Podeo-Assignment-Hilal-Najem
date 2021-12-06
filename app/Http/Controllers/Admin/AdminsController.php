@@ -34,9 +34,7 @@ class AdminsController extends Controller
      */
     public function create()
     {
-        $data = ['previous_route' => "suppliers.index"];
-
-        return view('admin.admins.create')->with($data);
+        return view('admin.admins.create');
     }
 
     /**
@@ -123,7 +121,6 @@ class AdminsController extends Controller
 
         $data = [
             'admin' => $admin,
-            'previous_route' => "suppliers.index"
         ];
 
         return view('admin.admins.edit')->with($data);
@@ -144,7 +141,7 @@ class AdminsController extends Controller
             'first_name' => ['required', 'string', 'max:255'],
             'last_name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255'],
-            'phone' => ['nullable','string', 'regex:/^(961(3|70|71)|(03|70|71))\d{6}$/'],
+            'phone' => ['nullable','string'],
         ]);
 
         $admin = Admin::findorfail($id);

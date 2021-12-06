@@ -69,7 +69,7 @@
                                 <button type="submit" class="btn btn-primary">
                                 {{ __('Update') }}
                                 </button>
-                                <a href="{{ route('go.back', $previous_route) }}">
+                                <a href="{{ url()->previous() }}">
                                     <button type="button" class="btn btn-danger">
                                     {{ __('Back') }}
                                     </button>
