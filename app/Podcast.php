@@ -12,8 +12,13 @@ class Podcast extends Model
      * @var array
      */
     protected $fillable = [
-        'title', 'description', 'link', 'admin_id'
+        'title', 'description', 'admin_id'
     ];
+
+    public function audios() 
+    {
+        return $this->hasMany(PodcastAudio::class);
+    }
 
     public function admin() 
     {
