@@ -26,4 +26,8 @@ This laravel web application hepls in managing podcasts that can have one or mor
 6. The important parts needed for testing:
 	1. Login guard on admin
 	2. CRUD on Podcasts table
-	3. Roles and Permissions effect in managing Podcasts in `Admin/PodcastsController`
+	3. Roles and Permissions effect in managing Podcasts in `Admin/PodcastsController` so please follow create routes and designated middlewares.
+	4. Permissions and Roles naming and using (in seeder) don't follow any logic. They just showcase the we can create a role, set a middleware and add a permission on controllers and its functions.
+7. Failed At:
+	1. `Create proper input validations` I could't force the `validate function in PodcastsController` to accept only audio files. But I was able to do that in html. *I tested only small audios that are less than a minute*
+	2. Didn't do any bonus tasks.
