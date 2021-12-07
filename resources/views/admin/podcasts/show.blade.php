@@ -13,12 +13,25 @@
                         {!! $podcast->description !!}
                     </div>
                     <br />
-                    <audio controls>
-                        <source src="{{ $podcast_link }}" type="audio/ogg">
-                        <source src="{{ $podcast_link }}" type="audio/mpeg">
-                        <source src="{{ $podcast_link }}" type="audio/mp3" />
-                        <source src="{{ $podcast_link }}" type="audio/x-m4a" />
-                    </audio>
+                    <div class="row">
+                        @isset($audio_files)
+                        @foreach($audio_files as $audio)
+                        <div class="col-md-4 audio-div">
+                            <div class="thumbnail-image">
+                                <img src="{{ asset('images/img1.jpg') }}" alt="" class="img-normal" />
+                            </div>
+                            <audio class="audio-normal" controls>
+                                <source src="{{ $audio->myLink() }}" type="audio/ogg">
+                                <source src="{{ $audio->myLink() }}" type="audio/mpeg">
+                                <source src="{{ $audio->myLink() }}" type="audio/mp3" />
+                                <source src="{{ $audio->myLink() }}" type="audio/x-m4a" />
+                            </audio>
+                        </div>
+                        @endforeach
+                        @endisset
+                    </div>
+                    <br />
+                    <br />
                     <br />
                     Update Podcast: 
                     <a href="{{ route('podcasts.update', $podcast->id) }}">

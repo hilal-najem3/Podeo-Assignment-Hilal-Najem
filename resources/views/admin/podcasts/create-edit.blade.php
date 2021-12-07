@@ -46,18 +46,29 @@
                         <div class="form-group row">
                             <label for="podcast" class="col-md-4 col-form-label text-md-right">{{ __('Podcast File') }}</label>
                             <div class="col-md-6">
-                                <audio id="audio-control" controls>
-                                    <source id="audioOggId" src="@if($edit){{ $podcast_link }}@endif" type="audio/ogg">
-                                    <source id="audioMpegId" src="@if($edit){{ $podcast_link }}@endif" type="audio/mpeg">
-                                    <source id="audioMp3Id" src="@if($edit){{ $podcast_link }}@endif" type="audio/mp3" />
-                                    <source id="audioM4AId" src="@if($edit){{ $podcast_link }}@endif" type="audio/x-m4a" />
-                                </audio>
                                 @if($edit)
+                                <div id="audio-div">
+                                    @isset($audio_files)
+                                    @foreach($audio_files as $audio)
+                                    <audio class="audio-normal" controls>
+                                        <source src="{{ $audio->myLink() }}" type="audio/ogg">
+                                        <source src="{{ $audio->myLink() }}" type="audio/mpeg">
+                                        <source src="{{ $audio->myLink() }}" type="audio/mp3" />
+                                        <source src="{{ $audio->myLink() }}" type="audio/x-m4a" />
+                                    </audio>
+                                    <br><br>
+                                    @endforeach
+                                </div>
+                                @endisset
+                                <br />
+                                <br />
+                                <input id="podcast" type="file" name="podcast_file[]" accept="audio/*" multiple required autofocus class="form-control @error('podcast_file') is-invalid @enderror">
                                 <input type="hidden" id="podcast_file_changed" name="podcast_file_changed" value="false">
-                                <input id="podcast" type="file" name="podcast_file" accept="audio/*" autofocus class="form-control @error('podcast_file') is-invalid @enderror">
                                 @endif
                                 @if($create)
-                                <input id="podcast" type="file" name="podcast_file" accept="audio/*" required autofocus class="form-control @error('podcast_file') is-invalid @enderror">
+                                <input id="podcast" type="file" name="podcast_file[]" accept="audio/*" multiple required autofocus class="form-control @error('podcast_file') is-invalid @enderror">
+                                <div id="audio-div" class="hidden">
+                                </div>
                                 @endif
                                 @error('podcast_file')
                                 <span class="invalid-feedback" role="alert">

@@ -1,9 +1,45 @@
 /* Custom css for admins */
 
 .card {
-	margin: 20px auto;
+    margin: 20px auto;
 }
 
 .my-special-div {
-	background-color: #B6B0AF;
+    background-color: #B6B0AF;
+}
+
+#audio-div {
+    margin: 10px;
+}
+
+.visible {
+    display: block;
+}
+
+.hidden {
+    display: none;
+}
+
+.audio-div {
+    width: 400px;
+    height: 200px;
+    margin: 10px;
+    padding: 5px;
+}
+
+.audio-normal {
+    width:  200px;
+    margin: 10px 10px;
+}
+
+.thumbnail-image {
+    width: 350px;
+    height: 150px;
+    margin: 10px;
+    padding: 5px;
+}
+
+.img-normal {
+    width: 200px;
+    height: 150px;
 }

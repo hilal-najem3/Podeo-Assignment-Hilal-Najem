@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Validator;
 use App\Helpers\UploadOrGetFileHelper;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\PodcastAudio;
 use App\Podcast;
 use Auth;
 
@@ -65,11 +66,16 @@ class PodcastsController extends Controller
             $podcast_data['admin_id'] = $request->user()->id;
             $this->validator($podcast_data)->validate();
             try {
-                $podcast_file = $request->file('podcast_file');
-                $podcast_file_folder = 'podcasts/' . $request->user()->name();
-                $podcast_file_link = UploadOrGetFileHelper::saveFile($podcast_file, $podcast_file_folder);
-                $podcast_data['link'] = $podcast_file_link;
                 $podcast = Podcast::create($podcast_data);
+
+                foreach ($request->file('podcast_file') as $podcast_file) {
+                    $podcast_file_folder = 'podcasts/' . $request->user()->name();
+                    $podcast_file_link = UploadOrGetFileHelper::saveFile($podcast_file, $podcast_file_folder);
+                    PodcastAudio::create([
+                        'podcast_id' => $podcast->id,
+                        'link' => $podcast_file_link
+                    ]);
+                }
 
                 return redirect()->route('podcasts.index')->with('message', 'Podcast Created');
             } catch (Exception $e) {
@@ -89,9 +95,9 @@ class PodcastsController extends Controller
     {
         if ($request->user()->canDo('read-podasts')) {
             $podcast = Podcast::findorfail($id);
-            $podcast_link = UploadOrGetFileHelper::getFile($podcast->link);
+            $audio_files = $podcast->audios()->get();
 
-            return view('admin.podcasts.show', compact('podcast', 'podcast_link'));
+            return view('admin.podcasts.show', compact('podcast', 'audio_files'));
         }
     }
 
@@ -105,11 +111,11 @@ class PodcastsController extends Controller
     {
         if ($request->user()->canDo('create-podasts')) {
             $podcast = Podcast::findorfail($id);
-            $podcast_link = UploadOrGetFileHelper::getFile($podcast->link);
+            $audio_files = $podcast->audios()->get();
 
             $data = [
                 'podcast' => $podcast,
-                'podcast_link' => $podcast_link,
+                'audio_files' => $audio_files,
                 'title' => 'Update Podcast - ' . $podcast->id,
                 'submit' => route('podcasts.update.submit', $podcast->id),
                 'button' => 'Update',
@@ -164,14 +170,22 @@ class PodcastsController extends Controller
                     $podcast->description = $podcast_data['description'];
                 }
                 $podcast->admin_id = $podcast_data['admin_id'];
-                if($request->hasFile('podcast_file') && isset($podcast_data['podcast_file_changed']) && $podcast_data['podcast_file_changed'] == true) {
-                    $podcast_file = $request->file('podcast_file');
-                    $podcast_file_folder = 'podcasts/' . $request->user()->name();
-                    $podcast_file_link = UploadOrGetFileHelper::saveFile($podcast_file, $podcast_file_folder);
-                    UploadOrGetFileHelper::deleteFile($podcast->link);
-                    $podcast->link = $podcast_file_link;
-                }
                 $podcast->save();
+                if($request->hasFile('podcast_file') && isset($podcast_data['podcast_file_changed']) && $podcast_data['podcast_file_changed'] == true) {
+                    $audio_files = $podcast->audios()->get();
+                    foreach($audio_files as $audio) {
+                        UploadOrGetFileHelper::deleteFile($audio->link);
+                        $audio->delete();
+                    }
+                    foreach ($request->file('podcast_file') as $podcast_file) {
+                        $podcast_file_folder = 'podcasts/' . $request->user()->name();
+                        $podcast_file_link = UploadOrGetFileHelper::saveFile($podcast_file, $podcast_file_folder);
+                        PodcastAudio::create([
+                            'podcast_id' => $podcast->id,
+                            'link' => $podcast_file_link
+                        ]);
+                    }
+                }
 
                 return redirect()->route('podcasts.index')->with('message', 'Podcast Updated');
             } catch (Exception $e) {
@@ -193,10 +207,14 @@ class PodcastsController extends Controller
             $podcast = Podcast::findorfail($id);
 
             try {
-                UploadOrGetFileHelper::deleteFile($podcast->link);
+                $audio_files = $podcast->audios()->get();
+                foreach($audio_files as $audio) {
+                    UploadOrGetFileHelper::deleteFile($audio->link);
+                    $audio->delete();
+                }
                 $podcast->delete();
 
-                return redirect()->route('podcasts.index')->with('message', 'Podcast Updated');
+                return redirect()->route('podcasts.index')->with('message', 'Podcast deleted');
             } catch (Exception $e) {
                 return redirect()->back()->withErrors($e->getMessage());
             }
@@ -218,10 +236,12 @@ class PodcastsController extends Controller
             'admin_id' => ['nullable', 'exists:admins,id'],
         ];
         if($edit) {
-            $rules['podcast_file'] = ['nullable', 'file'];
+            $rules['podcast_file'] = ['nullable'];
+             $rules['podcast_file.*'] = ['nullable', 'file'];
             $rules['podcast_file_changed'] = ['nullable', 'boolean'];
         } else {
-            $rules['podcast_file'] = ['required', 'file'];
+            $rules['podcast_file'] = ['required'];
+            $rules['podcast_file.*'] = ['file'];
         }
         return Validator::make($data, $rules);
     }
